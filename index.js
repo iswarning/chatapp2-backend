@@ -1,17 +1,17 @@
 const express = require('express');
 const app = express();
-const http = require('http');
+const http = require('node:http');
 const server = http.createServer(app);
-const cors = require('cors');
-const { ExpressPeerServer } = require('peer')
+// const cors = require('cors');
+// const { ExpressPeerServer } = require('peer')
 
-app.use(cors());
+// app.use(cors());
 
-const peerServer = ExpressPeerServer(server, {
-    path: '/'
-});
+// const peerServer = ExpressPeerServer(server, {
+//     path: '/'
+// });
 
-app.use('/peerjs', peerServer);
+// app.use('/peerjs', peerServer);
 
 app.get('/', (req, res) => res.send('seseseses'));
 
