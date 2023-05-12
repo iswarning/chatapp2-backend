@@ -14,6 +14,7 @@ const io = require("socket.io")(server, {
 const peerServer = ExpressPeerServer(server, {
 	debug: true,
 	path: "/myapp",
+  port: 443
 });
 
 app.use("/peerjs", peerServer);
@@ -23,6 +24,9 @@ peerServer.on('connection', (client) => { {
   console.log('connected')
 } });
 
+http.get('/hello', () => {
+  return 'Hello';
+})
 // peerServer.on('disconnect', (client) => { ... });
 
 io.on('connection', (socket) => {
@@ -38,4 +42,4 @@ io.on('connection', (socket) => {
     })
 });
 
-server.listen(9000);
+server.listen(3000);
