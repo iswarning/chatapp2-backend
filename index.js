@@ -1,25 +1,18 @@
 const express = require('express');
-const cors = require('cors');
-const { ExpressPeerServer } = require("peer");
 const app = express();
+const http = require('http');
+const server = http.createServer(app);
+const cors = require('cors');
+const { ExpressPeerServer } = require('peer')
 
-app.use(cors({
-    origin: true
-}));
-
-app.get("/", (req, res, next) => res.send("Hello world!"));
-
-
+app.use(cors());
 
 const peerServer = ExpressPeerServer(server, {
-    path: "/myapp",
+    path: '/'
 });
 
-app.use("/peerjs", peerServer);
+app.use('/peerjs', peerServer);
 
-// app.use((err, req, res, next) => {
-//     console.error(err.stack)
-//     res.status(500).send('Something broke!')
-// })
+app.get('/', (req, res) => res.send('seseseses'));
 
-app.listen(80);
+server.listen(3000, () => console.log('server running'))
