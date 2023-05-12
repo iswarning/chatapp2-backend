@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
-const http = require('http');
-const server = http.createServer(app);
+const https = require('https');
+const server = https.createServer(app);
 const { ExpressPeerServer } = require("peer");
 
 const io = require("socket.io")(server, {
@@ -24,7 +24,7 @@ peerServer.on('connection', (client) => { {
   console.log('connected')
 } });
 
-http.get('/hello', () => {
+https.get('/hello', () => {
   return 'Hello';
 })
 // peerServer.on('disconnect', (client) => { ... });
