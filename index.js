@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
+const { ExpressPeerServer } = require("peer");
 
 const io = require("socket.io")(server, {
     cors: {
@@ -9,6 +10,20 @@ const io = require("socket.io")(server, {
       methods: ["GET", "POST"]
     }
 });
+
+const peerServer = ExpressPeerServer(server, {
+	debug: true,
+	path: "/myapp",
+});
+
+app.use("/peerjs", peerServer);
+
+peerServer.on('connection', (client) => { {
+  console.log(client)
+  console.log('connected')
+} });
+
+// peerServer.on('disconnect', (client) => { ... });
 
 io.on('connection', (socket) => {
     socket.on('chat message', (msg) => {
@@ -23,6 +38,4 @@ io.on('connection', (socket) => {
     })
 });
 
-server.listen(3200, () => {
-    console.log('listening on *:3000');
-});
+server.listen(9000);
