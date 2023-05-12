@@ -1,48 +1,23 @@
 const express = require('express');
-const app = express();
-const http = require('http');
-const server = http.createServer(app);
+const cors = require('cors');
 const { ExpressPeerServer } = require("peer");
+const app = express();
 
-const io = require("socket.io")(server, {
-    cors: {
-        origin: "http://localhost:3000",
-        methods: ["GET", "POST"]
-    }
-});
+app.use(cors({
+    origin: true
+}));
+
+app.get("/", (req, res, next) => res.send("Hello world!"));
+
+const server = app.listen(9000);
 
 const peerServer = ExpressPeerServer(server, {
-    debug: true,
-    path: "/myapp"
+    path: "/myapp",
 });
 
 app.use("/peerjs", peerServer);
 
-peerServer.on('connection', (client) => {
-    {
-        console.log(client)
-        console.log('connected')
-    }
-});
-
-app.get('/hello', (req, res) => {
-        res.json('Hello');
-    })
-    // peerServer.on('disconnect', (client) => { ... });
-
-io.on('connection', (socket) => {
-    socket.on('chat message', (msg) => {
-        io.emit('chat message', msg);
-    });
-    socket.on('join-room', (roomId, userId) => {
-        socket.join(roomId);
-        socket.to(roomId).emit('user-connected', userId);
-        socket.on('disconnect', () => {
-            socket.to(roomId).emit('user-disconnected', userId)
-        })
-    })
-});
-
-server.listen(3000, () => {
-    console.log('Server running on port: ' + 3000)
-});
+app.use((err, req, res, next) => {
+    console.error(err.stack)
+    res.status(500).send('Something broke!')
+})
