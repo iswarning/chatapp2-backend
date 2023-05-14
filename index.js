@@ -1,18 +1,30 @@
 const express = require('express');
 const app = express();
-const http = require('node:http');
-const server = http.createServer(app);
-// const cors = require('cors');
-// const { ExpressPeerServer } = require('peer')
+const server = require('http').Server(app);
 
-// app.use(cors());
+const io = require('socket.io')(server, {
+    cors: {
+        origin: '*',
+    }
+});
 
-// const peerServer = ExpressPeerServer(server, {
-//     path: '/'
-// });
-
-// app.use('/peerjs', peerServer);
+const PeerServer = require('peer').PeerServer;
+PeerServer({ port: 443, path: '/peerjs' });
 
 app.get('/', (req, res) => res.send('seseseses'));
 
-server.listen(3000, () => console.log('server running'))
+io.on('connection', socket => {
+    socket.on('chat message', (msg) => {
+        socket.emit('chat message', msg);
+    })
+    socket.on('join-room', (roomId, userId) => {
+        console.log(roomId, userId);
+        socket.join(roomId)
+        socket.to(roomId).emit('user-connected', userId)
+        socket.on('disconnect', () => {
+            socket.to(roomId).emit('user-disconnected', userId)
+        })
+    })
+})
+
+server.listen(9000, () => console.log('server running'))
