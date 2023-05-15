@@ -9,13 +9,12 @@ const io = require('socket.io')(server, {
 });
 
 const PeerServer = require('peer').PeerServer;
-PeerServer({ port: 443, path: '/peerjs' });
-
-app.get('/', (req, res) => res.send('seseseses'));
+PeerServer({ port: 443, path: '/' });
 
 io.on('connection', socket => {
-    socket.on('chat message', (msg) => {
-        socket.emit('chat message', msg);
+    socket.on('message', msg => {
+        socket.emit('message', msg);
+        console.log(msg)
     })
     socket.on('join-room', (roomId, userId) => {
         console.log(roomId, userId);
