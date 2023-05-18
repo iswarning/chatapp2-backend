@@ -1,58 +1,85 @@
-// const express = require('express');
-// const app = express();
-// const server = require('http').Server(app);
+const express = require('express');
+const app = express();
+const http = require('http');
+const serverPeer = http.Server(app);
+// const serverMain = http.createServer(app);
 
-// const io = require('socket.io')(server, {
+const ioPeer = require('socket.io')(serverPeer, {
+    cors: {
+        origin: '*',
+    }
+});
+
+// const ioMain = require('socket.io')(serverMain, {
 //     cors: {
 //         origin: '*',
 //     }
 // });
 
-// const PeerServer = require('peer').PeerServer;
-// PeerServer({ port: 443, path: '/' });
+const PeerServer = require('peer').PeerServer;
+PeerServer({ port: 443, path: '/' });
 
-// io.on('connection', socket => {
-//     socket.on('message', msg => {
-//         socket.emit('message', msg);
-//         console.log(msg)
+// ioMain.on('connection', socket => {
+//     console.log("New client connected" + socket.id);
+
+//     socket.on("sendMessage", function(data) { // Handle khi có sự kiện tên là sendDataClient từ phía client
+//         ioMain.emit("responseMessage", { data }); // phát sự kiện  có tên sendDataServer cùng với dữ liệu tin nhắn từ phía server
 //     })
-//     socket.on('join-room', (roomId, userId) => {
-//         console.log(roomId, userId);
-//         socket.join(roomId)
-//         socket.to(roomId).emit('user-connected', userId)
-//         socket.on('disconnect', () => {
-//             socket.to(roomId).emit('user-disconnected', userId)
-//         })
-//     })
+
+//     socket.on("disconnect", () => {
+//         console.log("Client disconnected"); // Khi client disconnect thì log ra terminal.
+//     });
 // })
 
-// server.listen(9000, () => console.log('server running'))
-
-var express = require('express')
-const http = require("http");
-var app = express();
-const server = http.createServer(app);
-
-const socketIo = require("socket.io")(server, {
-    cors: {
-        origin: "*",
-    }
-});
-// nhớ thêm cái cors này để tránh bị Exception nhé :D  ở đây mình làm nhanh nên cho phép tất cả các trang đều cors được. 
-
-
-socketIo.on("connection", (socket) => { ///Handle khi có connect từ client tới
+ioPeer.on('connection', socket => {
     console.log("New client connected" + socket.id);
 
-    socket.on("sendDataClient", function(data) { // Handle khi có sự kiện tên là sendDataClient từ phía client
-        socketIo.emit("sendDataServer", { data }); // phát sự kiện  có tên sendDataServer cùng với dữ liệu tin nhắn từ phía server
+    socket.on("sendMessage", (msg) => { // Handle khi có sự kiện tên là sendDataClient từ phía client
+        ioPeer.emit("responseMessage", msg); // phát sự kiện  có tên sendDataServer cùng với dữ liệu tin nhắn từ phía server
     })
 
     socket.on("disconnect", () => {
         console.log("Client disconnected"); // Khi client disconnect thì log ra terminal.
     });
-});
+    socket.on('join-room', (roomId, userId) => {
+        console.log(roomId, userId);
+        socket.join(roomId)
+        socket.to(roomId).emit('user-connected', userId)
+        socket.on('disconnect', () => {
+            socket.to(roomId).emit('user-disconnected', userId)
+        })
+    })
+})
 
-server.listen(9000, () => {
-    console.log('Server đang chay tren cong 3000');
-});
+serverPeer.listen(9000, () => console.log('server peer running on port 9000'))
+// serverMain.listen(8000, () => console.log('server peer running on port 8000'))
+
+
+// var express = require('express')
+// const http = require("http");
+// var app = express();
+// const server = http.createServer(app);
+
+// const socketIo = require("socket.io")(server, {
+//     cors: {
+//         origin: "*",
+//     }
+// });
+// nhớ thêm cái cors này để tránh bị Exception nhé :D  ở đây mình làm nhanh nên cho phép tất cả các trang đều cors được. 
+
+
+// socketIo.on("connection", (socket) => { ///Handle khi có connect từ client tới
+//     console.log("New client connected" + socket.id);
+
+//     socket.on("sendMessage", function(data) { // Handle khi có sự kiện tên là sendDataClient từ phía client
+//         socketIo.emit("responseMessage", { data }); // phát sự kiện  có tên sendDataServer cùng với dữ liệu tin nhắn từ phía server
+//     })
+
+//     socket.on("disconnect", () => {
+//         console.log("Client disconnected"); // Khi client disconnect thì log ra terminal.
+//     });
+// });
+
+// server.listen(9000, () => {
+//     console.log('Server đang chay tren cong 3000');
+// });
