@@ -32,17 +32,22 @@ PeerServer({ port: 443, path: '/' });
 // })
 
 ioPeer.on('connection', socket => {
-    console.log("New client connected" + socket.id);
+    // console.log("New client connected" + socket.id);
 
     socket.on("sendMessage", (msg) => { // Handle khi có sự kiện tên là sendDataClient từ phía client
         ioPeer.emit("responseMessage", msg); // phát sự kiện  có tên sendDataServer cùng với dữ liệu tin nhắn từ phía server
     })
 
-    socket.on("disconnect", () => {
-        console.log("Client disconnected"); // Khi client disconnect thì log ra terminal.
-    });
-    socket.on('join-room', (roomId, userId) => {
-        console.log(roomId, userId);
+    // socket.on("disconnect", () => {
+    //     console.log("Client disconnected"); // Khi client disconnect thì log ra terminal.
+    // });
+
+    socket.on('call-video', (senderCall, recipientCall, chatId) => {
+        ioPeer.emit("response-call", senderCall, recipientCall, chatId)
+    })
+
+    socket.on('join-room', (roomId, userId, recipientId) => {
+        console.log(roomId, userId, recipientId);
         socket.join(roomId)
         socket.to(roomId).emit('user-connected', userId)
         socket.on('disconnect', () => {
