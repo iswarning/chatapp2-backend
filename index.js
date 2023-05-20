@@ -10,7 +10,7 @@ const io = new Server(server, { cors: { origin: '*' } });
 const peerServer = ExpressPeerServer(server, {
     proxied: true,
     debug: true,
-    path: "/",
+    path: "/peer",
     ssl: {},
 });
 
