@@ -1,6 +1,6 @@
 import express from 'express';
 import { createServer } from 'http';
-import { ExpressPeerServer } from 'peer';
+import { PeerServer } from 'peer';
 import { Server } from 'socket.io';
 
 const app = express();
@@ -8,7 +8,7 @@ const server = createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
 
 io.on('connection', socket => {
-    console.log(socket.id);
+
     socket.on("send-message", (msg) => {
         io.emit("response-message", msg);
     })
@@ -30,13 +30,9 @@ io.on('connection', socket => {
     })
 })
 
-const peerServer = ExpressPeerServer(server, {
-    proxied: true,
-    debug: true,
-    path: "/peer",
-    ssl: {},
+PeerServer({
+    path: "/",
+    port: 443
 });
-
-app.use(peerServer);
 
 server.listen(9000, () => console.log('server peer running on port 9000'))
