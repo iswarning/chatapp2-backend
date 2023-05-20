@@ -31,7 +31,7 @@ io.on('connection', socket => {
 })
 
 PeerServer({
-    path: "/",
+    path: "/peer",
     port: 443
 });
 
