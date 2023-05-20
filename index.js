@@ -7,17 +7,8 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
 
-const peerServer = ExpressPeerServer(server, {
-    proxied: true,
-    debug: true,
-    path: "/peer",
-    ssl: {},
-});
-
-app.use(peerServer);
-
 io.on('connection', socket => {
-
+    console.log(socket.id);
     socket.on("send-message", (msg) => {
         io.emit("response-message", msg);
     })
@@ -38,5 +29,14 @@ io.on('connection', socket => {
         })
     })
 })
+
+const peerServer = ExpressPeerServer(server, {
+    proxied: true,
+    debug: true,
+    path: "/peer",
+    ssl: {},
+});
+
+app.use(peerServer);
 
 server.listen(9000, () => console.log('server peer running on port 9000'))
