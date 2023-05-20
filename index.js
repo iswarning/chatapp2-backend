@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
+const { ExpressPeerServer } = require('peer');
 
 const io = require('socket.io')(server, {
     cors: {
@@ -9,8 +10,14 @@ const io = require('socket.io')(server, {
     }
 });
 
-const PeerServer = require('peer').PeerServer;
-PeerServer({ port: 443, path: '/' });
+const peerServer = ExpressPeerServer(server, {
+    proxied: true,
+    debug: true,
+    path: "/",
+    ssl: {},
+});
+
+app.use(peerServer);
 
 io.on('connection', socket => {
 
