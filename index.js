@@ -25,13 +25,25 @@ io.on('connection', socket => {
         } else {
             d.recipient.forEach((re) => userBusy.push(re))
         }
-        io.emit("response-call", data)
+        io.emit("response-call-video", data)
     });
 
     socket.on('reject-call', (data) => {
         let d = JSON.parse(data);
-        userBusy = userBusy.filter((user) => user === d.sender && d.recipient.includes(user))
-        io.emit("response-reject", data)
+        if(!d.isGroup) {
+            userBusy = userBusy.filter((user) => user === d.sender && d.recipient === user)
+        } else {
+            userBusy = userBusy.filter((user) => user !== d.sender)
+        }
+        io.emit("response-reject-call", data)
+    });
+
+    socket.on('accept-call', (data) => {
+        io.emit("response-accept-call", data)
+    })
+
+    socket.on('disconnect', () => {
+        userBusy = [];
     });
 
     socket.on('join-room', (roomId, userId, recipient) => {
@@ -39,7 +51,6 @@ io.on('connection', socket => {
         socket.to(roomId).emit('user-connected', userId)
         socket.on('disconnect', () => {
             socket.to(roomId).emit('user-disconnected', userId)
-            userBusy = [];
         })
     })
 
@@ -52,7 +63,7 @@ app.get("/getUserBusy", (req, res) => {
 })
 
 // PeerServer({
-//     path: "/peer",
+//     path: "/",
 //     port: 443
 // });
 
