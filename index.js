@@ -3,6 +3,7 @@ import { createServer } from 'http';
 import { PeerServer } from 'peer';
 import { Server } from 'socket.io';
 import cors from 'cors'
+import EventEmitter from 'events';
 
 const app = express();
 
@@ -61,6 +62,8 @@ app.use(cors({ origin: '*' }));
 app.get("/getUserBusy", (req, res) => {
     res.json(userBusy);
 })
+
+EventEmitter.setMaxListeners(50);
 
 // PeerServer({
 //     path: "/",
