@@ -41,7 +41,11 @@ io.on('connection', socket => {
 
     socket.on('accept-call', (data) => {
         io.emit("response-accept-call", data)
-    })
+    });
+
+    socket.on('action-call', (data) => {
+        io.emit("response-action-call", data)
+    });
 
     socket.on('disconnect', () => {
         userBusy = [];
@@ -64,10 +68,5 @@ app.get("/getUserBusy", (req, res) => {
 })
 
 EventEmitter.setMaxListeners(50);
-
-// PeerServer({
-//     path: "/",
-//     port: 443
-// });
 
 server.listen(9000, () => console.log('Server running on port 9000'))
