@@ -47,15 +47,26 @@ io.on('connection', socket => {
         io.emit("response-action-call", data)
     });
 
+    socket.on('disconnect-call', (data) => {
+        let d = JSON.parse(data);
+        if(!d.isGroup) {
+            userBusy = userBusy.filter((user) => user === d.sender && d.recipient === user)
+        } else {
+            userBusy = userBusy.filter((user) => user !== d.sender)
+        }
+        io.emit("response-disconnect-call", data)
+    });
+
     socket.on('disconnect', () => {
         userBusy = [];
     });
 
-    socket.on('join-room', (roomId, userId, recipient) => {
-        socket.join(roomId)
-        socket.to(roomId).emit('user-connected', userId)
+    socket.on('join-room', (response) => {
+        let data = JSON.parse(response);
+        socket.join(data.chatRoomId)
+        socket.to(data.chatRoomId).emit('user-connected', response)
         socket.on('disconnect', () => {
-            socket.to(roomId).emit('user-disconnected', userId)
+            socket.to(data.chatRoomId).emit('user-disconnected', response)
         })
     })
 
