@@ -12,7 +12,19 @@ const io = new Server(server, { cors: { origin: '*' } });
 
 let userBusy = [];
 
+let userOnline = [];
+
 io.on('connection', socket => {
+
+    socket.on("online", (userId) => {
+        userOnline.push(userId);
+        io.emit("response-online", JSON.stringify(userOnline));
+    })
+
+    socket.on("offline", (userId) => {
+        userOnline = userOnline.filter((user) => user === userId);
+        io.emit("response-online", JSON.stringify(userOnline));
+    })
 
     socket.on("send-message", (msg) => {
         io.emit("response-message", msg);
@@ -31,7 +43,7 @@ io.on('connection', socket => {
 
     socket.on('reject-call', (data) => {
         let d = JSON.parse(data);
-        if(!d.isGroup) {
+        if (!d.isGroup) {
             userBusy = userBusy.filter((user) => user === d.sender && d.recipient === user)
         } else {
             userBusy = userBusy.filter((user) => user !== d.sender)
@@ -49,7 +61,7 @@ io.on('connection', socket => {
 
     socket.on('disconnect-call', (data) => {
         let d = JSON.parse(data);
-        if(!d.isGroup) {
+        if (!d.isGroup) {
             userBusy = userBusy.filter((user) => user === d.sender && d.recipient === user)
         } else {
             userBusy = userBusy.filter((user) => user !== d.sender)
@@ -59,6 +71,7 @@ io.on('connection', socket => {
 
     socket.on('disconnect', () => {
         userBusy = [];
+        userOnline = [];
     });
 
     socket.on('join-room', (response) => {
