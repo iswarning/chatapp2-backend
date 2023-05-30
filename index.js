@@ -20,6 +20,14 @@ io.on('connection', socket => {
         io.emit("response-message", msg);
     });
 
+    socket.on("add-friend", (data) => {
+        io.emit("response-add-friend", data);
+    });
+
+    socket.on("accept-friend", (data) => {
+        io.emit("response-add-friend", data);
+    });
+
     socket.on('call-video-one-to-one', (data) => {
         let d = JSON.parse(data);
         userBusy.push(d.recipient);
