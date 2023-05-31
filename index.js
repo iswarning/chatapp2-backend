@@ -16,16 +16,8 @@ let userOnline = [];
 
 io.on('connection', socket => {
     
-    socket.on("send-message", (msg) => {
-        io.emit("response-message", msg);
-    });
-
-    socket.on("add-friend", (data) => {
-        io.emit("response-add-friend", data);
-    });
-
-    socket.on("accept-friend", (data) => {
-        io.emit("response-add-friend", data);
+    socket.on("send-notify", (msg) => {
+        io.emit("response-notify", msg);
     });
 
     socket.on('call-video-one-to-one', (data) => {
