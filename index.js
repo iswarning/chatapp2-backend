@@ -12,12 +12,27 @@ const io = new Server(server, { cors: { origin: '*' } });
 
 let userBusy = [];
 
-let userOnline = [];
+let userOnline = {};
 
 io.on('connection', socket => {
-    
+
     socket.on("send-notify", (msg) => {
         io.emit("response-notify", msg);
+    });
+
+    socket.on('login', function(data) {
+        console.log('a user ' + data.userId + ' connected');
+        // saving userId to object with socket ID
+        userOnline[socket.id] = data.userId;
+        io.emit("get-user-online", userOnline)
+    });
+
+
+
+    socket.on('disconnect', function() {
+        console.log('user ' + userOnline[socket.id] + ' disconnected');
+        // remove saved socket from users object
+        delete userOnline[socket.id];
     });
 
     socket.on('call-video-one-to-one', (data) => {
@@ -61,11 +76,6 @@ io.on('connection', socket => {
     //     }
     //     io.emit("response-disconnect-call", data)
     // });
-
-    socket.on('disconnect', () => {
-        userBusy = [];
-        userOnline = [];
-    });
 
     socket.on('join-room', (response) => {
         let data = JSON.parse(response);
