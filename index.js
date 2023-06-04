@@ -20,17 +20,11 @@ io.on('connection', socket => {
     });
 
     socket.on('login', function(data) {
-        console.log('a user ' + data.userId + ' connected');
-        // saving userId to object with socket ID
         userOnline[socket.id] = data.userId;
         io.emit("get-user-online", userOnline)
     });
 
-
-
     socket.on('disconnect', function() {
-        console.log('user ' + userOnline[socket.id] + ' disconnected');
-        // remove saved socket from users object
         delete userOnline[socket.id];
     });
 
