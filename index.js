@@ -1,6 +1,5 @@
 import express from 'express';
 import { createServer } from 'http';
-import { PeerServer } from 'peer';
 import { Server } from 'socket.io';
 import cors from 'cors'
 import EventEmitter from 'events';
