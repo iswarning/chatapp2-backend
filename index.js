@@ -27,7 +27,6 @@ io.on("connection", (socket) => {
     socket.on("disconnect", function() {
         delete userOnline[socket.id];
         io.emit("get-user-online", Object.values(userOnline));
-        console.log(userOnline)
     });
 
     socket.on("call-video-one-to-one", (data) => {
@@ -64,15 +63,19 @@ io.on("connection", (socket) => {
         io.emit("response-action-call", data);
     });
 
-    // socket.on('disconnect-call', (data) => {
-    //     let d = JSON.parse(data);
-    //     if (!d.isGroup) {
-    //         userBusy = userBusy.filter((user) => user === d.sender && d.recipient === user)
-    //     } else {
-    //         userBusy = userBusy.filter((user) => user !== d.sender)
-    //     }
-    //     io.emit("response-disconnect-call", data)
-    // });
+    socket.on('disconnect-call', (data) => {
+        let d = JSON.parse(data);
+        if (!d.isGroup) {
+            userBusy = userBusy.filter((user) => user === d.sender && d.recipient === user)
+        } else {
+            userBusy = userBusy.filter((user) => user !== d.sender)
+        }
+        io.emit("response-disconnect-call", data)
+    });
+
+    socket.on("disconnect", () => {
+        userBusy = []
+    })
 
     socket.on("join-room", (response) => {
         let data = JSON.parse(response);
