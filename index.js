@@ -81,6 +81,9 @@ io.on("connection", (socket) => {
         let data = JSON.parse(response);
         socket.join(data.chatRoomId);
         socket.to(data.chatRoomId).emit("user-connected", response);
+        socket.on("action-change", (res) => {
+            socket.to(data.chatRoomId).emit(res)
+        })
         socket.on("disconnect", () => {
             socket.to(data.chatRoomId).emit("user-disconnected", response);
         });
