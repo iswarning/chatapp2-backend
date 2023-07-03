@@ -14,9 +14,9 @@ let userBusy = [];
 let userOnline = {};
 
 io.on("connection", (socket) => {
-    // socket.on("send-notify", (msg) => {
-    //     io.emit("response-notify", msg);
-    // });
+    socket.on("send-notify", (msg) => {
+        io.emit("response-notify", msg);
+    });
 
     socket.on("login", function(data) {
         userOnline[socket.id] = data.userId;
